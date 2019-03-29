@@ -1,0 +1,69 @@
+es:
+  debates:
+    index:
+      section_header:
+        help: ¿Cómo funcionan los debates?
+      section_footer:
+        title: ¿Cómo funcionan los debates?
+        help_text_2: 'Para abrir un debate es necesario registrarse en la Plataforma de Participación de la Diputación de Valladolid. Los usuarios ya registrados también pueden comentar los debates abiertos y valorarlos con los botones de "Estoy de acuerdo" o "No estoy de acuerdo" que se encuentran en cada uno de ellos.'
+        help_text_3: "Ten en cuenta que un debate no activa ningún mecanismo de actuación concreto. Si quieres hacer una %{proposal} para el municipio a través de los %{budget} cuando se abra la convocatoria, ve a la sección correspondiente."  geozones:
+    none: Todo el municipio
+  layouts:
+    footer:
+      participation_text: Decide cómo debe ser el municipio que quieres.
+      transparency_text: Obtén cualquier información sobre el municipio.
+    header:
+      collaborative_legislation: Procesos normativos
+      notifications: Notificaciones
+      new_notifications:
+        one: Tienes una nueva notificación
+        other: Tienes %{count} notificaciones nuevas
+      no_notifications: "No tienes notificaciones nuevas"
+      open_city_slogan_html: Regístrate y debate sobre los que temas que te preocupan, propón ideas para mejorar tu pueblo y tu comarca y decidamos colectivamente cómo llevarlas a cabo.
+      open_city_title: Decide cómo quieres que sea tu municipio
+  notifications:
+    index:
+      comments_on:
+        one: Hay un nuevo comentario en
+        other: Hay %{count} comentarios nuevos en
+      notifiable_hidden: Este elemento ya no está disponible.
+      proposal_notification:
+        one: Hay una nueva notificación en
+        other: Hay %{count} nuevas notificaciones en
+      replies_to:
+        one: Hay una respuesta nueva a tu comentario en
+        other: Hay %{count} nuevas respuestas a tu comentario en
+  map:
+    title: "Comarcas"
+    proposal_for_district: "Crea una propuesta para tu comarca"
+  proposals:
+    index:
+      title: Propuestas ciudadanas
+      section_footer:
+        description: Haz una propuesta ciudadana. Si obtiene los apoyos suficientes y pasa a votación, puedes conseguir que todos los habitantes decidan cómo quieren que sea nuestro municipio.
+        help_text_1: "Las propuestas ciudadanas son una oportunidad para que los vecinos y colectivos decidan directamente cómo quieren que sea su municipio. Cualquier persona puede hacer una propuesta sobre un tema que le interese o preocupe para que el ayuntamiento la lleve a cabo, después de conseguir los apoyos suficientes y de someterse a votación ciudadana."
+  polls:
+    index:
+      no_geozone_restricted: "Toda la provincia"
+      geozone_restricted: "Comarcas"
+      section_footer:
+        help_text_2: "Para participar en la próxima votación tienes que registrarte en %{org} y verificar tu cuenta. Pueden votar todas las personas empadronadas en el municipio mayores de 16 años. Los resultados de todas las votaciones serán vinculantes para el gobierno."
+  shared:
+    tags_cloud:
+      districts: "Comarcas"
+      districts_list: "Listado de comarcas"
+  votes:
+    budget_investments:
+      different_heading_assigned: Sólo puedes apoyar proyectos de gasto de una partida
+  welcome:
+    debates:
+      description: Comparte y debate lo que te parezca importante para nuestro municipio.
+    decide:
+      description: Todos los habitantes del municipio podremos decidir si las propuestas realizadas se llevan a cabo.
+    do:
+      description: Si la propuesta es aceptada mayoritariamente, tu Ayuntamiento o la Diputación la llevarán a cabo.
+    proposal:
+      description: Realiza propuestas concretas para mejorar el lugar donde vives.
+  related_content:
+    content_title:
+      budget_investment: "Proyecto de gasto"
