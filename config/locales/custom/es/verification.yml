@@ -1,0 +1,5 @@
+es:
+  verification:
+    residence:
+      new:
+        error_verifying_census: El Padrón no pudo verificar tu información. Por favor, confirma que tus datos de empadronamiento sean correctos llamando al Ayuntamiento o visitando una oficina de Atención al ciudadano.
