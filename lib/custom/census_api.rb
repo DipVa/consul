@@ -18,21 +18,18 @@ class CensusApi
 			response = Response.new( get_response_body1( document_type, document_number, nonce, postal_code ), nonce )
 		end
 
-
 		return response
 	end
 
 	class Response
 
-		def initialize( body, nonce )
-
+		def initialize(body, nonce)
 			@data = Nokogiri::XML (Nokogiri::XML(body).at_css("servicioReturn"))
 			@nonce = nonce
-
 		end
 
 		def valid?
-			recibimosValid = ''+@data
+			recibimosValid = '' + @data
 
 			if recibimosValid.include? "recibido SML"
 				edad = 0
@@ -46,12 +43,10 @@ class CensusApi
 				fechaActual = Time.now.strftime("%Y%m%d%H%M%S")
 				fechaActualNumeric = BigDecimal.new(fechaActual);
 				fechaNacimientoNumeric = BigDecimal.new(date_of_birth);
-				edad = fechaActualNumeric-fechaNacimientoNumeric
+				edad = fechaActualNumeric - fechaNacimientoNumeric
 			end
 
-
-			return (exito == "-1") && (response_nonce==@nonce) && (is_habitante == "-1") && (edad >= 160000000000)
-
+			return (exito == "-1") && (response_nonce == @nonce) && (is_habitante == "-1") && (edad >= 160000000000)
 		end
 
 		def exito
@@ -61,10 +56,6 @@ class CensusApi
 		def response_nonce
 			@data.at_css("nonce").content
 		end
-
-#		def postal_code
-#			Base64.decode64 (@data.at_css("codigoPostal").content)
-#		end
 
 		def is_habitante
 			recibimosHabitante = ''+@data
@@ -83,7 +74,7 @@ class CensusApi
 		end
 
 		def date_of_birth
-			recibimos = ''+@data
+			recibimos = '' + @data
 
 			if recibimos.include? 'recibido SML'
 				# no hacemos nada. El usuario no corresponde a ningún padrón de la diputación
@@ -106,13 +97,8 @@ class CensusApi
 
 	private
 
-
 	def codificar( origen )
 		Digest::SHA512.base64digest( origen )
-	end
-
-	def cod64 (entrada)
-		Base64.encode64( entrada ).delete("\n")
 	end
 
 	def codpass (origen)
@@ -120,8 +106,7 @@ class CensusApi
 	end
 
 	# Tudela de Duero
-	def get_response_body( document_type, document_number, nonce, postal_code )
-
+	def get_response_body(document_type, document_number, nonce, postal_code)
 		fecha = Time.now.strftime("%Y%m%d%H%M%S")
 
 		origen = nonce + fecha + Rails.application.secrets.padron_public_key
@@ -129,27 +114,19 @@ class CensusApi
 		user = Rails.application.secrets.padron_user
 		pwd = codpass( Rails.application.secrets.padron_password )
 
-			peticion= "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-			peticion += "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-			peticion += "<SOAP-ENV:Body>"
-			peticion += "<m:servicio xmlns:m=\""+Rails.application.secrets.padron_host+"\">"
-			peticion += "<sml>"
-			peticion += Rack::Utils.escape_html("<E>\n\t<OPE>\n\t\t<APL>PAD</APL>\n\t\t<TOBJ>HAB</TOBJ>\n\t\t<CMD>ISHABITANTE</CMD>\n\t\t<VER>2.0</VER>\n\t</OPE>\n\t<SEC>\n\t\t<CLI>ACCEDE</CLI>\n\t\t<ORG>175</ORG>\n\t\t<ENT>175</ENT>\n\t\t<USU>"+user+"</USU>\n\t\t<PWD>"+pwd+"</PWD>\n\t\t<FECHA>"+fecha+"</FECHA>\n\t\t<NONCE>"+nonce+"</NONCE>\n\t\t<TOKEN>"+token+"</TOKEN>\n\t</SEC>\n\t<PAR>\n\t\t<nia></nia>\n\t\t<codigoTipoDocumento>1</codigoTipoDocumento>\n\t\t<documento>" + cod64(document_number) + "</documento>\n\t\t<mostrarFechaNac>-1</mostrarFechaNac>\n\t</PAR>\n</E>")
-			peticion += "</sml>"
-			peticion += "</m:servicio>"
-			peticion += "</SOAP-ENV:Body></SOAP-ENV:Envelope>"
+		request_body = build_request_body(user, pwd, fecha, nonce, token, document_number)
 
-			puts "peticion Tudela: "+peticion
-			respuesta = RestClient.post( Rails.application.secrets.padron_host, peticion,  {:content_type => "text/xml; charset=utf-8", :SOAPAction => Rails.application.secrets.padron_host } )
+		puts "peticion Tudela: " + request_body
 
-			puts "respuestaWS Tudela: "+respuesta
+		respuesta = make_request(request_body)
+
+		puts "respuestaWS Tudela: "+respuesta
 
 		respuesta
 	end
 
 	# Herrera de Duero
-	def get_response_body1( document_type, document_number, nonce, postal_code )
-
+	def get_response_body1(document_type, document_number, nonce, postal_code)
 		fecha = Time.now.strftime("%Y%m%d%H%M%S")
 
 		origen = nonce + fecha + Rails.application.secrets.padron_public_key
@@ -157,21 +134,43 @@ class CensusApi
 		user = Rails.application.secrets.padron_user
 		pwd = codpass( Rails.application.secrets.padron_password )
 
-			peticion= "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-			peticion += "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-			peticion += "<SOAP-ENV:Body>"
-			peticion += "<m:servicio xmlns:m=\""+Rails.application.secrets.padron_host+"\">"
-			peticion += "<sml>"
-			peticion += Rack::Utils.escape_html("<E>\n\t<OPE>\n\t\t<APL>PAD</APL>\n\t\t<TOBJ>HAB</TOBJ>\n\t\t<CMD>ISHABITANTE</CMD>\n\t\t<VER>2.0</VER>\n\t</OPE>\n\t<SEC>\n\t\t<CLI>ACCEDE</CLI>\n\t\t<ORG>93</ORG>\n\t\t<ENT>93</ENT>\n\t\t<USU>"+user+"</USU>\n\t\t<PWD>"+pwd+"</PWD>\n\t\t<FECHA>"+fecha+"</FECHA>\n\t\t<NONCE>"+nonce+"</NONCE>\n\t\t<TOKEN>"+token+"</TOKEN>\n\t</SEC>\n\t<PAR>\n\t\t<nia></nia>\n\t\t<codigoTipoDocumento>1</codigoTipoDocumento>\n\t\t<documento>" + cod64(document_number) + "</documento>\n\t\t<mostrarFechaNac>-1</mostrarFechaNac>\n\t</PAR>\n</E>")
-			peticion += "</sml>"
-			peticion += "</m:servicio>"
-			peticion += "</SOAP-ENV:Body></SOAP-ENV:Envelope>"
+		request_body = build_request_body(user, pwd, fecha, nonce, token, document_number)
 
-			puts "peticion Herrera: "+peticion
-			respuesta = RestClient.post( Rails.application.secrets.padron_host, peticion,  {:content_type => "text/xml; charset=utf-8", :SOAPAction => Rails.application.secrets.padron_host } )
+		puts "peticion Herrera: " + request_body
 
-			puts "respuestaWS Herrera: "+respuesta
+		respuesta = make_request(request_body)
+
+		puts "respuestaWS Herrera: " + request_body
 
 		respuesta
 	end
+
+	def make_request(request_body)
+		RestClient.post(
+			census_host,
+			request_body,
+			{ content_type: "text/xml; charset=utf-8", SOAPAction: census_host }
+		)
+	end
+
+	def build_request_body(user, password, date, nonce, token, document_number)
+		encoded_document_number = Base64.encode64(document_number).delete("\n")
+
+		body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+		body += "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+		body += "<SOAP-ENV:Body>"
+		body += "<m:servicio xmlns:m=\"" + census_host + "\">"
+		body += "<sml>"
+		body += Rack::Utils.escape_html("<E>\n\t<OPE>\n\t\t<APL>PAD</APL>\n\t\t<TOBJ>HAB</TOBJ>\n\t\t<CMD>ISHABITANTE</CMD>\n\t\t<VER>2.0</VER>\n\t</OPE>\n\t<SEC>\n\t\t<CLI>ACCEDE</CLI>\n\t\t<ORG>93</ORG>\n\t\t<ENT>93</ENT>\n\t\t<USU>" + user + "</USU>\n\t\t<PWD>" + password + "</PWD>\n\t\t<FECHA>" + date + "</FECHA>\n\t\t<NONCE>" + nonce + "</NONCE>\n\t\t<TOKEN>" + token + "</TOKEN>\n\t</SEC>\n\t<PAR>\n\t\t<nia></nia>\n\t\t<codigoTipoDocumento>1</codigoTipoDocumento>\n\t\t<documento>" + encoded_document_number + "</documento>\n\t\t<mostrarFechaNac>-1</mostrarFechaNac>\n\t</PAR>\n</E>")
+		body += "</sml>"
+		body += "</m:servicio>"
+		body += "</SOAP-ENV:Body></SOAP-ENV:Envelope>"
+
+		body
+	end
+
+	def census_host
+		Rails.application.secrets.padron_host
+	end
+
 end
