@@ -107,11 +107,11 @@ class CensusApi
     date = current_date
     request_body = build_request_body(date, nonce, encoded_token(nonce, date), document_number, municipality_id)
 
-    Rails.logger.info("[Census WS] Request: #{request_body}")
+    Rails.logger.info("[Census WS] Request: #{request_body}") unless Rails.env.production?
 
     response = make_request(request_body)
 
-    Rails.logger.info("[Census WS] Response: #{response}")
+    Rails.logger.info("[Census WS] Response: #{response}") unless Rails.env.production?
 
     response
   end
