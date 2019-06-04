@@ -7,7 +7,7 @@ class CensusApi
 
     nonce = generate_nonce
     response = Response.new(
-      get_response_body(document_type, document_number, nonce, postal_code),
+      get_response_body(document_type, document_number, nonce, postal_code, 175),
       nonce
     )
 
@@ -16,7 +16,7 @@ class CensusApi
     if response != nil && response.is_habitante == "0"
       nonce = generate_nonce
       response = Response.new(
-        get_response_body(document_type, document_number, nonce, postal_code),
+        get_response_body(document_type, document_number, nonce, postal_code, 93),
         nonce
       )
     end
@@ -103,9 +103,9 @@ class CensusApi
 
   private
 
-  def get_response_body(document_type, document_number, nonce, postal_code)
+  def get_response_body(document_type, document_number, nonce, postal_code, municipality_id)
     date = current_date
-    request_body = build_request_body(date, nonce, encoded_token(nonce, date), document_number)
+    request_body = build_request_body(date, nonce, encoded_token(nonce, date), document_number, municipality_id)
 
     Rails.logger.info("[Census WS] Request: #{request_body}")
 
@@ -124,12 +124,14 @@ class CensusApi
     )
   end
 
-  def build_request_body(date, nonce, token, document_number)
+  def build_request_body(date, nonce, token, document_number, municipality_id)
     encoded_document_number = Base64.encode64(document_number).delete("\n")
 
     sml_message = Rack::Utils.escape_html(
       "<E>\n\t<OPE>\n\t\t<APL>PAD</APL>\n\t\t<TOBJ>HAB</TOBJ>\n\t\t<CMD>ISHABITANTE</CMD>"\
-      "\n\t\t<VER>2.0</VER>\n\t</OPE>\n\t<SEC>\n\t\t<CLI>ACCEDE</CLI>\n\t\t<ORG>93</ORG>\n\t\t<ENT>93</ENT>"\
+      "\n\t\t<VER>2.0</VER>\n\t</OPE>\n\t<SEC>\n\t\t<CLI>ACCEDE</CLI>\n\t\t"\
+      "<ORG>#{municipality_id}</ORG>\n\t\t"\
+      "<ENT>#{municipality_id}</ENT>"\
       "\n\t\t<USU>" + census_user + "</USU>\n\t\t<PWD>" + encoded_census_password + "</PWD>\n\t\t<FECHA>" + date + "</FECHA>\n\t\t<NONCE>" + nonce + "</NONCE>"\
       "\n\t\t<TOKEN>" + token + "</TOKEN>\n\t</SEC>\n\t<PAR>\n\t\t<nia></nia>\n\t\t<codigoTipoDocumento>1</codigoTipoDocumento>"\
       "\n\t\t<documento>" + encoded_document_number + "</documento>\n\t\t<mostrarFechaNac>-1</mostrarFechaNac>\n\t</PAR>\n</E>"
