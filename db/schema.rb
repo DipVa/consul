@@ -15,20 +15,8 @@ ActiveRecord::Schema.define(version: 20180323190027) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "unaccent"
   enable_extension "pg_trgm"
-
-  create_table "activities", force: :cascade do |t|
-    t.integer  "user_id"
-    t.string   "action"
-    t.integer  "actionable_id"
-    t.string   "actionable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "activities", ["actionable_id", "actionable_type"], name: "index_activities_on_actionable_id_and_actionable_type", using: :btree
-  add_index "activities", ["user_id"], name: "index_activities_on_user_id", using: :btree
+  enable_extension "unaccent"
 
   create_table "administrators", force: :cascade do |t|
     t.integer "user_id"
