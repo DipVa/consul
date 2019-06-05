@@ -51,7 +51,7 @@ class CensusApi
 
       self.response_nonce = sml_message.at_css("nonce")&.content
 
-      if successful_request?
+      if successful_request? && is_citizen?
         self.census_birth_time = Time.parse(sml_message.at_css("fechaNacimiento")&.content)
         self.census_date_of_birth = census_birth_time.to_date
         self.census_age = ((Time.zone.now - census_birth_time) / 1.year.seconds).floor
@@ -66,11 +66,6 @@ class CensusApi
 
       unless request_nonce == response_nonce
         log("Nonce does not match")
-        return false
-      end
-
-      unless is_citizen?
-        log("User is not citizen")
         return false
       end
 
