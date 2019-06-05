@@ -2,21 +2,22 @@ require "csv"
 
 class CensusApi
 
-  def call( document_type, document_number, postal_code)
+  TUDELA_DE_DUERO_ENTITY_ID = 175
+  HERRERA_DE_DUERO_ENTITY_ID = 93
+
+  def call(document_type, document_number)
     puts "[DEBUG] Called the custom CensusApi class"
 
     nonce = generate_nonce
     response = Response.new(
-      get_response_body(document_type, document_number, nonce, postal_code, 175),
+      get_response_body(document_type, document_number, nonce, entity_id(TUDELA_DE_DUERO_ENTITY_ID)),
       nonce
     )
 
-    # Si recibimos isHabitante = 0 comprobamos los Ayuntamientos que tienen cp en común.
-    # En el caso de Tudela, comprobamos también la otra entidad correspondiente a Herrera
-    if response != nil && response.is_habitante == "0"
+    unless response.is_citizen?
       nonce = generate_nonce
       response = Response.new(
-        get_response_body(document_type, document_number, nonce, postal_code, 93),
+        get_response_body(document_type, document_number, nonce, entity_id(HERRERA_DE_DUERO_ENTITY_ID)),
         nonce
       )
     end
@@ -28,92 +29,76 @@ class CensusApi
     18.times.map { rand(10) }.join
   end
 
+  def entity_id(id)
+    Rails.env.production? ? id : 999
+  end
+
   class Response
-    def initialize(body, nonce)
-      @data = Nokogiri::XML (Nokogiri::XML(body).at_css("servicioReturn"))
-      @nonce = nonce
+
+    attr_accessor(
+      :sml_message,
+      :request_nonce,
+      :response_nonce,
+      :census_birth_time,
+      :census_date_of_birth,
+      :census_age
+    )
+
+    def initialize(body, request_nonce)
+      self.request_nonce = request_nonce
+      self.sml_message = Nokogiri::XML(Nokogiri::XML(body).at_css("servicioReturn"))
+      log("response SML message:\n#{sml_message}")
+
+      self.response_nonce = sml_message.at_css("nonce")&.content
+
+      if successful_request?
+        self.census_birth_time = Time.parse(sml_message.at_css("fechaNacimiento")&.content)
+        self.census_date_of_birth = census_birth_time.to_date
+        self.census_age = ((Time.zone.now - census_birth_time) / 1.year.seconds).floor
+      end
     end
 
     def valid?
-      recibimosValid = "" + @data
-
-      if recibimosValid.include? "recibido SML"
-        edad = 0
-      elsif recibimosValid.include? "Es repetido"
-        edad = 0
-      elsif recibimosValid.include? "integridad"
-        edad = 0
-      elsif recibimosValid.include? "La Organiza"
-        edad = 0
-      else
-        fechaActual = Time.now.strftime("%Y%m%d%H%M%S")
-        fechaActualNumeric = BigDecimal.new(fechaActual);
-        fechaNacimientoNumeric = BigDecimal.new(date_of_birth);
-        edad = fechaActualNumeric - fechaNacimientoNumeric
+      unless successful_request?
+        log("Request was not successful")
+        return false
       end
 
-      (exito == "-1") && (response_nonce == @nonce) && (is_habitante == "-1") && (edad >= 160_000_000_000)
-    end
-
-    def exito
-      @data.at_css("exito").content
-    end
-
-    def response_nonce
-      @data.at_css("nonce").content
-    end
-
-    def is_habitante
-      recibimosHabitante = "" + @data
-      if recibimosHabitante.include? "recibido SML"
-        # no hacemos nada. El usuario no corresponde a ningún padrón de la diputación
-        puts "No es usuario- SML"
-      elsif recibimosHabitante.include? "Es repetido"
-        puts "No es usuario - repetido"
-      elsif recibimosHabitante.include? "integridad"
-        puts "No es usuario- integridad"
-      elsif recibimosHabitante.include? "La Organiza"
-        puts "No es usuario- La organización no existe"
-      else
-        @data.at_css("isHabitante").content
+      unless request_nonce == response_nonce
+        log("Nonce does not match")
+        return false
       end
-    end
 
-    def date_of_birth
-      recibimos = "" + @data
-
-      if recibimos.include? "recibido SML"
-        # no hacemos nada. El usuario no corresponde a ningún padrón de la diputación
-        puts "No es usuario-SML"
-      elsif recibimos.include? "Es repetido"
-        puts "No es usuario-REPETIDO"
-      elsif recibimos.include? "integridad"
-        puts "No es usuario-integridad"
-      elsif recibimos.include? "La Organiza"
-        edad = 0
-      else
-        @data.at_css("fechaNacimiento").content
+      unless is_citizen?
+        log("User is not citizen")
+        return false
       end
+
+      log("User is citizen!")
+      true
     end
 
-    def document_number
-      Base64.decode64(@data.at_css("documento").content)
+    def successful_request?
+      sml_message.at_css("exito")&.content == "-1"
+    end
+
+    def is_citizen?
+      sml_message.at_css("isHabitante")&.content == "-1"
+    end
+
+    private
+
+    def log(message)
+      Rails.logger.info("[Census WS] #{message}")
     end
   end
 
   private
 
-  def get_response_body(document_type, document_number, nonce, postal_code, municipality_id)
+  def get_response_body(document_type, document_number, nonce, municipality_id)
     date = current_date
     request_body = build_request_body(date, nonce, encoded_token(nonce, date), document_number, municipality_id)
-
-    Rails.logger.info("[Census WS] Request: #{request_body}") unless Rails.env.production?
-
-    response = make_request(request_body)
-
-    Rails.logger.info("[Census WS] Response: #{response}") unless Rails.env.production?
-
-    response
+    make_request(request_body)
   end
 
   def make_request(request_body)
@@ -164,5 +149,9 @@ class CensusApi
 
   def encoded_census_password
     Digest::SHA1.base64digest(Rails.application.secrets.padron_password)
+  end
+
+  def log(message)
+    Rails.logger.info("[Census WS] #{message}")
   end
 end
