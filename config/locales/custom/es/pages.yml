@@ -1,5 +1,34 @@
 es:
   pages:
     help:
-      title: ¿Qué es la Plataforma de Participación Ciudadana de la Diputación de Valladolid?
+      title: ¿Qué es la Plataforma de Participación Ciudadana de Tudela de Duero?
       guide: Esta guía explica para qué sirven y cómo funcionan cada una de las secciones de esta Plataforma.
+      budgets:
+        feature: |
+          En este proceso cada año la gente plantea, apoya y vota proyectos.
+          Los más votados pasan a financiarse con el presupuesto municipal.
+        phase_1_html: |
+          Entre enero y principios de marzo, las personas registradas en
+          Participa Tudela de Duero pueden <b>presentar proyectos</b>.
+        phase_2_html: |
+          En marzo, los proponentes tienen que recabar apoyos, a modo de
+          <b>fase de preselección</b>.
+        phase_3_html: |
+          Entre abril y comienzos de mayo los técnicos del Ayuntamiento tasan
+          <b>los proyectos</b> por orden de más a menos apoyados y comprueban
+          que son viables.
+      proposals:
+        help_text: |
+          Para crear una propuesta hay que registrarse en Participa Tudela de
+          Duero. Las propuestas que consiguen el apoyo en la web del 1% de la
+          gente con derecho a voto (53726 apoyos de personas mayores de 16 años
+          empadronadas) pasan a votación. Para apoyar propuestas es necesario
+          verificar tu cuenta.
+      polls:
+        help_text_1: Pueden votar todas las personas empadronadas en la ciudad mayores de 16 años.
+        help_text_2: Los resultados de todas las votaciones son vinculantes para el gobierno municipal.
+      processes:
+        help_text_1_html: |
+          Para participar en un proceso hay que registrarse en %{org} y
+          consultar la página de %{link} periódicamente
+          para saber qué normativas y políticas se están debatiendo y consultando.

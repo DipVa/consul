@@ -7,3 +7,6 @@ module Consul
     config.i18n.available_locales = [:es, :en]
   end
 end
+
+def skip_html(&block)
+end
