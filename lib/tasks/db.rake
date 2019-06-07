@@ -8,8 +8,8 @@ namespace :db do
   desc "Anonymizes DB data and creates standard users"
   task anonymize: :environment do
     unless Rails.env.development? || Rails.env.staging?
-      puts "This task can only be run in development or staging environments"
-      break
+      puts "Error: this task can only be run in development or staging environments"
+      exit(-1)
     end
 
     puts "Destroying locks..."
