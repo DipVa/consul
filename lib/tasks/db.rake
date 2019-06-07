@@ -56,6 +56,8 @@ namespace :db do
         email: "verified#{n + 1}@example.com",
         verified_at: Time.current,
         residence_verified_at: Time.current,
+        document_number: "1234567#{n}V",
+        document_type: 1
       ))
 
       User.create!(common_attrs.merge(
@@ -63,12 +65,16 @@ namespace :db do
         email: "unverified#{n + 1}@example.com",
       ))
 
-      User.create!(common_attrs.merge(
+      admin = User.create!(common_attrs.merge(
         username: "admin#{n + 1}",
         email: "admin#{n + 1}@example.com",
         verified_at: Time.current,
         residence_verified_at: Time.current,
+        document_number: "1234567#{n}A",
+        document_type: 1
       ))
+      admin.create_administrator
+      Poll::Officer.create!(user: admin)
     end
   end
 end
