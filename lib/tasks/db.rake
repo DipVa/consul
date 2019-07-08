@@ -5,6 +5,11 @@ namespace :db do
     load(Rails.root.join("db", "dev_seeds.rb"))
   end
 
+  desc "populate the default pages manually"
+  task pages: :environment do
+    load(Rails.root.join("db", "pages.rb"))
+  end
+
   desc "Anonymizes DB data and creates standard users"
   task anonymize: :environment do
     unless Rails.env.development? || Rails.env.staging?

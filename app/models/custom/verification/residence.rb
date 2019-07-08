@@ -17,6 +17,9 @@ class Verification::Residence
 
   validates :terms_of_service, acceptance: { allow_nil: false }
   validates :postal_code, length: { is: 5 }
+  def postal_code_in_madrid
+    errors.add(:postal_code, I18n.t("verification.residence.new.error_not_allowed_postal_code")) unless valid_postal_code?
+  end
 
   validate :successful_census_request
   validate :user_is_citizen?
