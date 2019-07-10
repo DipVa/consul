@@ -1,6 +1,9 @@
 
 census_entities = []
 
+geozones_mapping_file = File.read(Rails.root.join("config", "geozones_mapping.json"))
+geozones_mapping = JSON.parse(geozones_mapping_file)
+
 CSV.foreach(Rails.root.join("config", "entidades_censo.csv"), headers: true, col_sep: "\;") do |row|
   census_entities.append({
     ine_code: row[0],

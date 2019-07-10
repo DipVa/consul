@@ -22,6 +22,7 @@
 /config/deploy-secrets.yml
 /config/maintenance.yml
 /config/entidades_censo.csv
+/config/geozones_mapping.json
 
 /coverage
 
@@ -35,4 +36,3 @@
 public/sitemap.xml
 public/system/
 /public/ckeditor_assets/
-
