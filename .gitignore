@@ -23,6 +23,7 @@
 /config/maintenance.yml
 /config/entidades_censo.csv
 /config/geozones_mapping.json
+/config/entities_geozones_dict.json
 
 /coverage
 

@@ -125,10 +125,12 @@ class SpendingProposal < ActiveRecord::Base
     return :organization  if user.organization?
   end
 
+  # wadus
   def votable_by?(user)
     reason_for_not_being_votable_by(user).blank?
   end
 
+  # como evito que vote un usuario?
   def register_vote(user, vote_value)
     if votable_by?(user)
       vote_by(voter: user, vote: vote_value)

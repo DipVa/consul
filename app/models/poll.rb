@@ -52,6 +52,7 @@ class Poll < ActiveRecord::Base
     current + recounting
   end
 
+  #
   def answerable_by?(user)
     user.present? &&
       user.level_two_or_three_verified? &&

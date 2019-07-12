@@ -45,7 +45,7 @@ class SpendingProposalsController < ApplicationController
   end
 
   def vote
-    @spending_proposal.register_vote(current_user, 'yes')
+    @spending_proposal.register_vote(current_user, 'yes') # wadus
     set_spending_proposal_votes(@spending_proposal)
   end
 

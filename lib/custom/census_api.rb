@@ -3,7 +3,7 @@ require "csv"
 class CensusApi
 
   def call(document_type, document_number, postal_code)
-    response = Response.new(nil, nil)
+    response = Response.new(body: nil, nonce: nil)
     entities = census_entities_codes(postal_code)
 
     Rails.logger.info("[Census WS] Postal code #{postal_code} matches with entities: #{entities}")
@@ -11,8 +11,9 @@ class CensusApi
     entities.each do |entity_code|
       nonce = 18.times.map { rand(10) }.join
       response = Response.new(
-        get_response_body(document_type, document_number, nonce, entity_id(entity_code)),
-        nonce
+        entity_id: entity_id(entity_code),
+        body: get_response_body(document_type, document_number, nonce, entity_id(entity_code)),
+        nonce: nonce
       )
 
       break if response.is_citizen?
@@ -32,19 +33,23 @@ class CensusApi
   class Response
 
     attr_accessor(
+      :entity_id,
       :sml_message,
       :request_nonce,
       :response_nonce,
       :census_birth_time,
       :census_date_of_birth,
-      :census_age
+      :census_age,
+      :geozone
     )
 
-    def initialize(body, request_nonce)
-      return unless body.present? && request_nonce.present?
+    def initialize(params = {})
+      self.entity_id = params[:entity_id]
+      self.request_nonce = params[:nonce]
 
-      self.request_nonce = request_nonce
-      self.sml_message = Nokogiri::XML(Nokogiri::XML(body).at_css("servicioReturn"))
+      return unless params[:body].present? && request_nonce.present?
+
+      self.sml_message = Nokogiri::XML(Nokogiri::XML(params[:body]).at_css("servicioReturn"))
       log("response SML message:\n#{sml_message}")
 
       self.response_nonce = sml_message.at_css("nonce")&.content
@@ -53,6 +58,13 @@ class CensusApi
         self.census_birth_time = Time.parse(sml_message.at_css("fechaNacimiento")&.content)
         self.census_date_of_birth = census_birth_time.to_date
         self.census_age = ((Time.zone.now - census_birth_time) / 1.year.seconds).floor
+
+        geozone_name = ENTITIES_GEOZONES_DICTIONARY[entity_id.to_s]
+        geozone = Geozone.find_by(name: geozone_name.upcase) || Geozone.find_by(name: geozone_name)
+
+        Rollbar.warning("User is in census but can't match geozone. entity_id: #{entity_id} geozone_name: #{geozone_name}") unless geozone
+
+        self.geozone = geozone
       end
     end
 
