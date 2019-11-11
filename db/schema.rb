@@ -483,7 +483,7 @@ ActiveRecord::Schema.define(version: 20190607160900) do
     t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+    t.string   "tenant"
   end
 
   create_table "direct_messages", force: :cascade do |t|
@@ -1392,6 +1392,31 @@ ActiveRecord::Schema.define(version: 20190607160900) do
     t.index ["legislation/proposals_count"], name: "index_tags_on_legislation/proposals_count", using: :btree
     t.index ["name"], name: "index_tags_on_name", unique: true, using: :btree
     t.index ["proposals_count"], name: "index_tags_on_proposals_count", using: :btree
+  end
+
+  add_index "tags", ["debates_count"], name: "index_tags_on_debates_count", using: :btree
+  add_index "tags", ["legislation/processes_count"], name: "index_tags_on_legislation/processes_count", using: :btree
+  add_index "tags", ["legislation/proposals_count"], name: "index_tags_on_legislation/proposals_count", using: :btree
+  add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
+  add_index "tags", ["proposals_count"], name: "index_tags_on_proposals_count", using: :btree
+  add_index "tags", ["spending_proposals_count"], name: "index_tags_on_spending_proposals_count", using: :btree
+
+  create_table "tenants", force: :cascade do |t|
+    t.string   "name"
+    t.string   "title"
+    t.string   "subdomain"
+    t.string   "postal_code"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.string   "endpoint_census"
+    t.string   "institution_code_census"
+    t.string   "portal_name_census"
+    t.string   "user_code_census"
+    t.string   "server_name"
+    t.string   "twitter_key"
+    t.string   "twitter_secret"
+    t.string   "facebook_key"
+    t.string   "facebook_secret"
   end
 
   create_table "topics", force: :cascade do |t|

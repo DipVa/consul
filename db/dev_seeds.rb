@@ -42,5 +42,6 @@ require_relative "dev_seeds/legislation_proposals"
 require_relative "dev_seeds/legislation_people_proposals"
 require_relative "dev_seeds/milestones"
 require_relative "dev_seeds/pages"
+require_relative "dev_seeds/tenants"
 
 log "All dev seeds created successfuly 👍"

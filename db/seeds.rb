@@ -9,6 +9,10 @@ end
 
 Setting.reset_defaults
 
+if Apartment::Tenant.current == "public"
+  Tenant.create(name: "Consul", title: "Consul",  subdomain: "public", postal_code: "280")
+end
+
 WebSection.create(name: "homepage")
 WebSection.create(name: "debates")
 WebSection.create(name: "proposals")
