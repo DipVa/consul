@@ -2084,6 +2084,7 @@ table {
   }
 
   .comment {
+    line-height: $list-lineheight;
     margin: $line-height / 4 0;
     position: relative;
 
@@ -2116,17 +2117,8 @@ table {
     padding: $line-height / 4;
     position: relative;
 
-    .relative,
-    [class^="icon-arrow"] {
-      padding-left: $line-height / 2;
-    }
-
-    [class^="icon-arrow"] {
-      font-size: $base-font-size;
-      left: -20px;
-      position: absolute;
-      text-decoration: none;
-      top: -1px;
+    .relative {
+      padding-left: rem-calc(18);
     }
 
     .divider {
@@ -2136,6 +2128,35 @@ table {
 
     form {
       margin-top: $line-height / 2;
+    }
+  }
+
+  .responses-count {
+    .far {
+      @extend .fa-minus-square;
+      font-size: $small-font-size;
+      left: 0;
+      position: absolute;
+      text-decoration: none;
+      top: 2px;
+    }
+
+    .show-children {
+      display: none;
+    }
+
+    &.collapsed {
+      .far {
+        @extend .fa-plus-square;
+      }
+
+      .collapse-children {
+        display: none;
+      }
+
+      .show-children {
+        display: inline;
+      }
     }
   }
 
@@ -2172,12 +2193,24 @@ table {
   }
 }
 
-.comment-children {
-  border-left: 1px dashed $border;
-  display: inline-block;
-  margin-left: rem-calc(16);
-  padding-left: rem-calc(8);
-  width: 100%;
+.comment-list {
+  margin: $line-height / 4 0;
+
+  .comment-list {
+    border-left: 1px dashed $border;
+    display: inline-block;
+    padding-left: rem-calc(8);
+    width: 100%;
+
+  }
+
+  .comment-form {
+    display: none;
+  }
+
+  &:empty {
+    display: none;
+  }
 }
 
 .comment-info {
@@ -2788,11 +2821,18 @@ table {
     margin-top: rem-calc(-48);
   }
 
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
   .card {
     border: 0;
+    flex-grow: 0;
     overflow: visible;
 
     a {
+      height: 100%;
 
       img {
         transition-duration: 0.3s;

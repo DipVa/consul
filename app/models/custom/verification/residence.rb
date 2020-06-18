@@ -7,6 +7,7 @@ class Verification::Residence
   include ActiveModel::Validations::Callbacks
 
   attr_accessor :user, :document_number, :document_type, :date_of_birth, :terms_of_service
+  attr_writer :tenant
 
   before_validation :call_census_api
 
@@ -42,6 +43,10 @@ class Verification::Residence
       residence_verified_at: Time.now,
       verified_at: Time.now
     )
+  end
+
+  def tenant
+    @tenant ||= Tenant.current
   end
 
   private

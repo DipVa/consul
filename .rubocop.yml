@@ -198,15 +198,6 @@ Performance/EndWith:
 Performance/StartWith:
   Enabled: true
 
-Rails/ActionFilter:
-  Enabled: true
-
-Rails/ApplicationJob:
-  Enabled: true
-
-Rails/ApplicationRecord:
-  Enabled: true
-
 Rails/CreateTableWithTimestamps:
   Enabled: true
   Exclude:
@@ -218,7 +209,10 @@ Rails/Date:
 
 Rails/DynamicFindBy:
   Enabled: true
-  Severity: refactor
+  Whitelist:
+    - find_by_slug_or_id
+    - find_by_slug_or_id!
+    - find_by_manager_login
 
 Rails/EnumUniqueness:
   Enabled: true
@@ -241,9 +235,6 @@ Rails/HasManyOrHasOneDependent:
   Enabled: true
   Severity: refactor
 
-Rails/HttpPositionalArguments:
-  Enabled: true
-
 Rails/InverseOf:
   Enabled: true
   Exclude:
@@ -259,6 +250,7 @@ Rails/OutputSafety:
   Severity: warning
   Exclude:
     - app/helpers/text_with_links_helper.rb
+    - config/initializers/escape_javascript_fix.rb
 
 Rails/PluralizationGrammar:
   Enabled: true

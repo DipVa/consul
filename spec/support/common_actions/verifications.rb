@@ -44,22 +44,21 @@ module Verifications
     end
   end
 
-  def fill_in_translatable_ckeditor(field, locale, params = {})
-    selector = ".translatable-fields[data-locale='#{locale}'] textarea[id$='_#{field}']"
-    locator = find(selector, visible: false)[:id]
-    fill_in_ckeditor(locator, params)
-  end
+  def fill_in_ckeditor(label, with:)
+    locator = find("label", text: label)[:for]
 
-  # @param [String] locator label text for the textarea or textarea id
-  def fill_in_ckeditor(locator, params = {})
-    # Find out ckeditor id at runtime using its label
-    locator = find("label", text: locator)[:for] if page.has_css?("label", text: locator)
+    until page.execute_script("return CKEDITOR.instances.#{locator}.status === 'ready';") do
+      sleep 0.01
+    end
+
     # Fill the editor content
     page.execute_script <<-SCRIPT
         var ckeditor = CKEDITOR.instances.#{locator}
-        ckeditor.setData("#{params[:with]}")
+        ckeditor.setData("#{with}")
         ckeditor.focus()
         ckeditor.updateElement()
     SCRIPT
+
+    expect(page).to have_ckeditor label, with: with
   end
 end
