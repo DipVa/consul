@@ -1,19 +1,25 @@
 class Officing::Residence
   include ActiveModel::Model
+  include ActiveModel::Dates
   include ActiveModel::Validations::Callbacks
 
-  attr_accessor :user, :officer, :document_number, :document_type, :year_of_birth
+  attr_accessor :user, :officer, :document_number, :document_type, :year_of_birth,
+                :date_of_birth, :postal_code
 
   before_validation :retrieve_census_data
 
   validates :document_number, presence: true
   validates :document_type, presence: true
   #validates :year_of_birth, presence: true
+  validates :date_of_birth, presence: true, if: -> { Setting.force_presence_date_of_birth? }
+  validates :postal_code, presence: true, if: -> { Setting.force_presence_postal_code? }
 
   validate :allowed_age
   validate :residence_in_madrid
 
   def initialize(attrs = {})
+    self.date_of_birth = parse_date("date_of_birth", attrs)
+    attrs = remove_date("date_of_birth", attrs)
     super
     clean_document_number
   end
@@ -23,7 +29,7 @@ class Officing::Residence
 
     if user_exists?
       self.user = find_user_by_document
-      user.update(verified_at: Time.current)
+      user.update!(verified_at: Time.current)
     else
       user_params = {
         document_number:       document_number,
@@ -42,11 +48,17 @@ class Officing::Residence
     end
   end
 
+  def save!
+    validate! && save
+  end
+
   def store_failed_census_call
     FailedCensusCall.create(
       user: user,
       document_number: document_number,
       document_type: document_type,
+      date_of_birth: date_of_birth,
+      postal_code: postal_code,
       year_of_birth: year_of_birth,
       poll_officer: officer
     )
@@ -57,8 +69,7 @@ class Officing::Residence
   end
 
   def find_user_by_document
-    User.where(document_number: document_number,
-               document_type:   document_type).first
+    User.find_by(document_number: document_number, document_type: document_type)
   end
 
   def residence_in_madrid
@@ -84,7 +95,7 @@ class Officing::Residence
   end
 
   def geozone
-    Geozone.where(census_code: district_code).first
+    Geozone.find_by(census_code: district_code)
   end
 
   def district_code
@@ -120,5 +131,4 @@ class Officing::Residence
     def random_password
       (0...20).map { ("a".."z").to_a[rand(26)] }.join
     end
-
 end
