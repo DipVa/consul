@@ -15,11 +15,10 @@ class ApplicationController < ActionController::Base
   before_action :set_locale
   before_action :track_email_campaign
   before_action :set_return_url
+  before_action :set_mailer_host
 
   check_authorization unless: :devise_controller?
   self.responder = ApplicationResponder
-
-  protect_from_forgery with: :exception
 
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
@@ -138,5 +137,10 @@ class ApplicationController < ActionController::Base
       path = url_for(request.query_parameters.merge(path_options))
 
       redirect_to path, response_status
+    end
+
+    def set_mailer_host
+      ActionMailer::Base.default_url_options[:host] = request.host_with_port
+      ActionMailer::Base.asset_host = request.protocol + request.host_with_port
     end
 end

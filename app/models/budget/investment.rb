@@ -98,7 +98,7 @@ class Budget
     scope :by_group,          ->(group_id)    { where(group_id: group_id) }
     scope :by_heading,        ->(heading_id)  { where(heading_id: heading_id) }
     scope :by_admin,          ->(admin_id)    { where(administrator_id: admin_id) }
-    scope :by_tag,            ->(tag_name)    { tagged_with(tag_name) }
+    scope :by_tag,            ->(tag_name)    { tagged_with(tag_name).distinct }
 
     scope :for_render, -> { includes(:heading) }
 
@@ -319,7 +319,7 @@ class Budget
     end
 
     def recalculate_heading_winners
-      Budget::Result.new(budget, heading).calculate_winners if incompatible_changed?
+      Budget::Result.new(budget, heading).calculate_winners if saved_change_to_incompatible?
     end
 
     def set_responsible_name
@@ -396,7 +396,7 @@ class Budget
     private
 
       def set_denormalized_ids
-        self.group_id = heading&.group_id if heading_id_changed?
+        self.group_id = heading&.group_id if will_save_change_to_heading_id?
         self.budget_id ||= heading&.group&.budget_id
       end
 

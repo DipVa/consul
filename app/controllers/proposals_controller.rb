@@ -5,7 +5,6 @@ class ProposalsController < ApplicationController
   include ImageAttributes
   include Translatable
 
-  before_action :parse_tag_filter, only: :index
   before_action :load_categories, only: [:index, :new, :create, :edit, :map, :summary]
   before_action :load_geozones, only: [:edit, :map, :summary]
   before_action :authenticate_user!, except: [:index, :show, :map, :summary]
@@ -57,6 +56,7 @@ class ProposalsController < ApplicationController
   end
 
   def vote
+    @follow = Follow.find_or_create_by!(user: current_user, followable: @proposal)
     @proposal.register_vote(current_user, "yes")
     set_proposal_votes(@proposal)
   end
@@ -73,6 +73,7 @@ class ProposalsController < ApplicationController
   end
 
   def vote_featured
+    @follow = Follow.find_or_create_by!(user: current_user, followable: @proposal)
     @proposal.register_vote(current_user, "yes")
     set_featured_proposal_votes(@proposal)
   end
@@ -150,7 +151,7 @@ class ProposalsController < ApplicationController
     end
 
     def load_featured
-      return unless !@advanced_search_terms && @search_terms.blank? && @tag_filter.blank? && params[:retired].blank? && @current_order != "recommendations"
+      return unless !@advanced_search_terms && @search_terms.blank? && params[:retired].blank? && @current_order != "recommendations"
 
       if Setting["feature.featured_proposals"]
         @featured_proposals = Proposal.not_archived.unsuccessful
