@@ -1,6 +1,6 @@
 require "csv"
 
-class CensusApi
+class CustomCensusApi
 
   TUDELA_DE_DUERO_ENTITY_ID = 175
   HERRERA_DE_DUERO_ENTITY_ID = 93
