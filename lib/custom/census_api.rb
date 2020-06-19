@@ -34,7 +34,7 @@ class CensusApi
   end
 
   def entity_id(id)
-    Rails.env.production? ? id : 999
+    Rails.env.development? ? 999 : id
   end
 
   class Response
