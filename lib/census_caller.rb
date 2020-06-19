@@ -9,4 +9,5 @@ class CensusCaller
 
     response
   end
+
 end

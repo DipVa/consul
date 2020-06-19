@@ -1,4 +1,3 @@
-
 # require_dependency Rails.root.join('app', 'models', 'verification', 'residence').to_s
 
 class Verification::Residence
@@ -6,7 +5,7 @@ class Verification::Residence
   include ActiveModel::Dates
   include ActiveModel::Validations::Callbacks
 
-  attr_accessor :user, :document_number, :document_type, :date_of_birth, :terms_of_service
+  attr_accessor :user, :document_number, :document_type, :date_of_birth, :postal_code, :terms_of_service
   attr_writer :tenant
 
   before_validation :call_census_api
@@ -14,8 +13,10 @@ class Verification::Residence
   validates_presence_of :document_number
   validates_presence_of :document_type
   validates_presence_of :date_of_birth
+  validates_presence_of :postal_code
 
   validates :terms_of_service, acceptance: { allow_nil: false }
+  validates :postal_code, length: { is: 5 }
 
   validate :successful_census_request
   validate :user_is_citizen?
@@ -41,7 +42,8 @@ class Verification::Residence
       document_type: document_type,
       date_of_birth: @census_api_response.census_date_of_birth,
       residence_verified_at: Time.now,
-      verified_at: Time.now
+      verified_at: Time.now,
+      geozone: Geozone.find_by(external_code: @census_api_response.geozone_external_code)
     )
   end
 
@@ -76,7 +78,7 @@ class Verification::Residence
     end
 
     def call_census_api
-      @census_api_response = CensusApi.new.call( document_type, document_number)
+      @census_api_response = CensusApi.new.call(document_type, document_number, postal_code)
 
       if Rails.env.production? && !user_is_citizen?
         store_failed_attempt

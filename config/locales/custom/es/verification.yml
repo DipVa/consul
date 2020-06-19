@@ -2,4 +2,7 @@ es:
   verification:
     residence:
       new:
+        postal_code: Código postal
+        document_number_help_title: Ayuda
+        document_number_help_text_html: "<strong>DNI</strong>: 12345678A<br> <strong>Pasaporte</strong>: AAA000001<br> <strong>Tarjeta de residencia</strong>: X1234567P"
         error_verifying_census: El Padrón no pudo verificar tu información. Por favor, confirma que tus datos de empadronamiento sean correctos llamando al Ayuntamiento o visitando una oficina de Atención al ciudadano.
