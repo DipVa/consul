@@ -10,9 +10,11 @@ class Officing::Residence
 
   validates :document_number, presence: true
   validates :document_type, presence: true
+  # TODO: review
   #validates :year_of_birth, presence: true
-  validates :date_of_birth, presence: true, if: -> { Setting.force_presence_date_of_birth? }
-  validates :postal_code, presence: true, if: -> { Setting.force_presence_postal_code? }
+  #validates :date_of_birth, presence: true, if: -> { Setting.force_presence_date_of_birth? }
+  #validates :postal_code, presence: true, if: -> { Setting.force_presence_postal_code? }
+  #validates :year_of_birth, presence: true, unless: -> { Setting.force_presence_date_of_birth? }
 
   validate :allowed_age
   validate :residence_tenant
@@ -35,6 +37,8 @@ class Officing::Residence
         document_number:       document_number,
         document_type:         document_type,
         geozone:               geozone,
+        # TODO review
+        #date_of_birth:         response_date_of_birth.in_time_zone.to_datetime,
         #date_of_birth:         date_of_birth.in_time_zone.to_datetime,
         #gender:                gender,
         residence_verified_at: Time.current,
@@ -87,17 +91,21 @@ class Officing::Residence
 
     unless allowed_age?
       #errors.add(:year_of_birth, I18n.t('verification.residence.new.error_not_allowed_age'))
+      errors.add(:year_of_birth, I18n.t('verification.residence.new.error_not_allowed_age'))
     end
   end
 
   def allowed_age?
-   # Age.in_years(date_of_birth) >= User.minimum_required_age
+    # TODO review
+    # Age.in_years(date_of_birth) >= User.minimum_required_age
+    # Age.in_years(response_date_of_birth) >= User.minimum_required_age
   end
 
   def geozone
     Geozone.find_by(census_code: district_code)
   end
 
+  # TODO review
   def district_code
    # @census_api_response.district_code
   end
@@ -110,10 +118,21 @@ class Officing::Residence
     #@census_api_response.date_of_birth
   end
 
+  def response_date_of_birth
+    @census_api_response.date_of_birth
+  end
+
   private
 
     def retrieve_census_data
       @census_api_response = CensusCaller.new.call(document_type, document_number, year_of_birth)
+    end
+
+    def census_year_of_birth
+      @census_api_response = CensusCaller.new.call(document_type,
+                                                   document_number,
+                                                   date_of_birth,
+                                                   postal_code)
     end
 
     def residency_valid?
