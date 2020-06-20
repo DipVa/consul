@@ -5,8 +5,8 @@ class Verification::Residence
   include ActiveModel::Dates
   include ActiveModel::Validations::Callbacks
 
-  attr_accessor :user, :document_number, :document_type, :date_of_birth, :postal_code, :terms_of_service
-  attr_writer :tenant
+  attr_accessor :user, :document_number, :document_type, :date_of_birth, :terms_of_service
+  attr_writer :tenant, :postal_code
 
   before_validation :call_census_api
 
@@ -49,6 +49,10 @@ class Verification::Residence
 
   def tenant
     @tenant ||= Tenant.current
+  end
+
+  def postal_code
+    tenant&.postal_code.presence || @postal_code
   end
 
   private
