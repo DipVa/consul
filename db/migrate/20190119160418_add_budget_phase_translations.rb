@@ -1,17 +1,15 @@
-class AddBudgetPhaseTranslations < ActiveRecord::Migration
+class AddBudgetPhaseTranslations < ActiveRecord::Migration[4.2]
+  def change
+    create_table :budget_phase_translations do |t|
+      t.integer :budget_phase_id, null: false
+      t.string :locale, null: false
+      t.timestamps null: false
 
-  def self.up
-    Budget::Phase.create_translation_table!(
-      {
-        description: :text,
-        summary: :text
-      },
-      { migrate_data: true }
-    )
+      t.text :description
+      t.text :summary
+
+      t.index :budget_phase_id
+      t.index :locale
+    end
   end
-
-  def self.down
-    Budget::Phase.drop_translation_table!
-  end
-
 end

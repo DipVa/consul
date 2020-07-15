@@ -10,18 +10,36 @@ module Notifications
   end
 
   def comment_body(resource)
-    "comment-body-#{resource.class.name.parameterize("_").to_sym}_#{resource.id}"
+    if resource.class.name == "Legislation::Question"
+      "Leave your answer"
+    else
+      "Leave your comment"
+    end
+  end
+
+  def submit_comment_text(resource)
+    if resource.class.name == "Legislation::Question"
+      "Publish answer"
+    else
+      "Publish comment"
+    end
   end
 
   def create_proposal_notification(proposal)
     login_as(proposal.author)
     visit root_path
 
-    click_link "My activity"
+    click_link "My content"
 
     within("#proposal_#{proposal.id}") do
-      click_link "Send notification"
+      click_link "Dashboard"
     end
+
+    within("#side_menu") do
+      click_link "Message to users"
+    end
+
+    click_link "Send message to proposal followers"
 
     fill_in "proposal_notification_title", with: "Thanks for supporting proposal: #{proposal.title}"
     fill_in "proposal_notification_body", with: "Please share it with others! #{proposal.summary}"

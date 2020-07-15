@@ -1,5 +1,4 @@
 shared_examples "document validations" do |documentable_factory|
-  include DocumentsHelper
   include DocumentablesHelper
 
   let!(:document)               { build(:document, documentable_factory.to_sym) }
@@ -47,17 +46,16 @@ shared_examples "document validations" do |documentable_factory|
   end
 
   it "is not valid without a documentable_id" do
-    document.save
+    document.save!
     document.documentable_id = nil
 
     expect(document).not_to be_valid
   end
 
   it "is not valid without a documentable_type" do
-    document.save
+    document.save!
     document.documentable_type = nil
 
     expect(document).not_to be_valid
   end
-
 end

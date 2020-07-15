@@ -10,8 +10,9 @@ class Verification::ResidenceController < ApplicationController
 
   def create
     @residence = Verification::Residence.new(residence_params.merge(user: current_user))
+    @residence.tenant = Tenant.current
     if @residence.save
-      redirect_to verified_user_path, notice: t('verification.residence.create.flash.success')
+      redirect_to verified_user_path, notice: t("verification.residence.create.flash.success")
     else
       render :new
     end

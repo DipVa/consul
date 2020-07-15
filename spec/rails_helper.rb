@@ -13,12 +13,23 @@ require "capybara/rspec"
 require "selenium/webdriver"
 
 Rails.application.load_tasks if Rake::Task.tasks.empty?
-I18n.default_locale = :en
 
 include Warden::Test::Helpers
 Warden.test_mode!
 
 ActiveRecord::Migration.maintain_test_schema!
+
+# Monkey patch from https://github.com/rails/rails/pull/32293
+# Remove when we upgrade to Rails 5.2
+require "action_dispatch/system_testing/test_helpers/setup_and_teardown"
+module ActionDispatch::SystemTesting::TestHelpers::SetupAndTeardown
+  def after_teardown
+    take_failed_screenshot
+    Capybara.reset_sessions!
+  ensure
+    super
+  end
+end
 
 RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
@@ -27,13 +38,11 @@ RSpec.configure do |config|
   end
 end
 
-Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
-end
-
 Capybara.register_driver :headless_chrome do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-    chromeOptions: { args: %w(headless no-sandbox window-size=1200,600) }
+    "goog:chromeOptions" => {
+      args: %W[headless no-sandbox window-size=1200,600 proxy-server=127.0.0.1:#{Capybara::Webmock.port_number}]
+    }
   )
 
   Capybara::Selenium::Driver.new(
@@ -43,8 +52,13 @@ Capybara.register_driver :headless_chrome do |app|
   )
 end
 
-Capybara.javascript_driver = :headless_chrome
-
 Capybara.exact = true
+Webdrivers::Chromedriver.required_version = "2.38"
 
 OmniAuth.config.test_mode = true
+
+def with_subdomain(subdomain, &block)
+  Capybara.app_host = "http://#{subdomain}.lvh.me"
+  block.call
+  Capybara.app_host = Capybara.default_host
+end
