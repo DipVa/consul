@@ -1,36 +1,40 @@
 require "csv"
 
-class CensusApi
+class CustomCensusApi
 
   TUDELA_DE_DUERO_ENTITY_ID = 175
   HERRERA_DE_DUERO_ENTITY_ID = 93
 
-  def call(document_type, document_number)
-    puts "[DEBUG] Called the custom CensusApi class"
+  def call(document_type, document_number, postal_code)
+    response = Response.new(nil, nil)
+    entities = census_entities_codes(postal_code)
 
-    nonce = generate_nonce
-    response = Response.new(
-      get_response_body(document_type, document_number, nonce, entity_id(TUDELA_DE_DUERO_ENTITY_ID)),
-      nonce
-    )
+    Rails.logger.info("[Census WS] Postal code #{postal_code} matches with entities: #{entities}")
 
-    unless response.is_citizen?
-      nonce = generate_nonce
+    entities.each do |entity_code|
+      nonce = 18.times.map { rand(10) }.join
       response = Response.new(
-        get_response_body(document_type, document_number, nonce, entity_id(HERRERA_DE_DUERO_ENTITY_ID)),
+        get_response_body(document_type, document_number, nonce, entity_id(entity_code)),
         nonce
       )
+      response.geozone_external_code = census_geozone_external_code(entity_code)
+
+      break if response.is_citizen?
     end
 
     response
   end
 
-  def generate_nonce
-    18.times.map { rand(10) }.join
+  def census_entities_codes(postal_code)
+    CENSUS_DICTIONARY[postal_code] || []
+  end
+
+  def census_geozone_external_code(entity_code)
+    GEOZONES_DICTIONARY[entity_code]
   end
 
   def entity_id(id)
-    Rails.env.production? ? id : 999
+    Rails.env.development? ? 999 : id
   end
 
   class Response
@@ -41,10 +45,13 @@ class CensusApi
       :response_nonce,
       :census_birth_time,
       :census_date_of_birth,
-      :census_age
+      :census_age,
+      :geozone_external_code
     )
 
     def initialize(body, request_nonce)
+      return unless body.present? && request_nonce.present?
+
       self.request_nonce = request_nonce
       self.sml_message = Nokogiri::XML(Nokogiri::XML(body).at_css("servicioReturn"))
       log("response SML message:\n#{sml_message}")
@@ -59,6 +66,8 @@ class CensusApi
     end
 
     def valid?
+      return false unless sml_message.present?
+
       unless successful_request?
         log("Request was not successful")
         return false
@@ -69,7 +78,6 @@ class CensusApi
         return false
       end
 
-      log("User is citizen!")
       true
     end
 
@@ -147,6 +155,7 @@ class CensusApi
   end
 
   def log(message)
-    Rails.logger.info("[Census WS] #{message}")
+    Rails.logger.info("[Census WS] #{message}") unless Rails.env.production?
   end
+
 end
