@@ -5,17 +5,7 @@ es:
         help: ¿Cómo funcionan los debates?
       section_footer:
         title: ¿Cómo funcionan los debates?
-        help_text_2: |
-          <p>Para abrir un debate es necesario registrarse en la Plataforma de
-          Participación de Tudela de Duero. Los usuarios ya
-          registrados también pueden comentar los debates abiertos y valorarlos
-          con los botones de "Estoy de acuerdo" o "No estoy de acuerdo" que se
-          encuentran en cada uno de ellos.</p>
-
-          <p>Ten en cuenta que un debate no activa ningún mecanismo de actuación
-          concreto. Si quieres hacer una propuesta para la provincia a través
-          de los <a href="/budgets">presupuestos participativos</a> cuando se abra la convocatoria, ve a la sección
-          correspondiente.</p>
+        help_text_2: "<p>Para abrir un debate es necesario registrarse en la Plataforma de Participación de %{org}. Los usuarios ya registrados también pueden comentar los debates abiertos y valorarlos con los botones de \"Estoy de acuerdo\" o \"No estoy de acuerdo\" que se encuentran en cada uno de ellos.</p> <p>Ten en cuenta que un debate no activa ningún mecanismo de actuación concreto. Si quieres hacer una propuesta para la provincia a través de los <a href=\"/budgets\">presupuestos participativos</a> cuando se abra la convocatoria, ve a la sección correspondiente.</p>"
     none: Todo el municipio
   layouts:
     footer:

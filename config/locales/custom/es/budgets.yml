@@ -7,12 +7,12 @@ es:
       accepting: Presentación de propuestas
     index:
       section_header:
-        help: Bases de funcionamiento Presupuesto Participativo Tudela de Duero 2019
+        help: "Bases de funcionamiento Presupuesto Participativo %{org} 2021"
       section_footer:
         title: ¿Qué son los presupuestos participativos?
         description: Los Presupuestos Participativos son un mecanismo por el que la ciudadanía decide el destino de una parte de los recursos provinciales elevando propuestas y seleccionando entre ellas las que considera prioritarias.
         help_text_titulo1: "¿Qué cantidad destina la Diputación de Valladolid a los Presupuestos Participativos?"
-        help_text_1: "La Diputación de Valladolid destinará 1,2 millones de euros a Presupuestos Participativos para el ejercicio de 2019 , repartidos en 240.000 € para cada una de las cinco zonas geográficas en que se ha dividido la provincia."
+        help_text_1: "La Diputación de Valladolid destinará 1,2 millones de euros a Presupuestos Participativos para el ejercicio de 2021 , repartidos en 240.000 € para cada una de las cinco zonas geográficas en que se ha dividido la provincia."
         help_text_titulo2: "¿Quién puede participar?"
         help_text_2: "Podrán tomar parte en este proceso las personas mayores de 16 años empadronadas en cualquiera de los municipios de la provincia de Valladolid menores de 20.000 habitantes (todos menos Valladolid, Laguna de Duero y Medina del Campo)."
         help_text_3: "También pueden realizar propuestas las asociaciones de la provincia inscritas en el Registro de Asociaciones de la Junta de Castilla y León, así como los Ayuntamientos."
@@ -22,7 +22,7 @@ es:
         help_text_3_3: "Evaluación: Durante el mes de septiembre, el personal técnico provincial valorará económica y técnicamente las propuestas remitidas, para comprobar que son competencia de la Diputación y que son viables."
         help_text_3_4: "Votación: Durante el mes de noviembre se desarrollará la fase de votación final en la que tú decides cómo distribuir los 240.000 € de tu zona. Las propuestas más votadas en cada zona se incorporarán al proyecto del Presupuesto de la Diputación de Valladolid."
         help_text_titulo4: "¿Qué puedo proponer?"
-        help_text_4_1: "Podrás hacer propuestas de inversión o de gasto corriente que puedan ser ejecutadas por la Diputación durante el año 2019 en la zona donde estás empadronado (o en otra zona de la provincia que tú elijas, pero solo en una)."
+        help_text_4_1: "Podrás hacer propuestas de inversión o de gasto corriente que puedan ser ejecutadas por la Diputación durante el año 2021 en la zona donde estás empadronado (o en otra zona de la provincia que tú elijas, pero solo en una)."
         help_text_4_2: "Para que la propuesta sea válida, tiene que ajustarse a los siguientes criterios:"
         help_text_4_2_1: "- Ser una inversión o gasto corriente."
         help_text_4_2_2: "- Ser de competencia provincial."
